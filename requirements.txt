@@ -1,0 +1,6 @@
+Django
+djangorestframework
+djongo
+pymongo[srv]
+django-cors-headers
+djangorestframework-simplejwt
