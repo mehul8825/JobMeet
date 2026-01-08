@@ -1,45 +1,115 @@
-import { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import './App.css'
+import React from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
+import { GoogleOAuthProvider } from '@react-oauth/google';
+import { ThemeProvider } from './contexts/ThemeContext';
+import { AuthProvider } from './contexts/AuthContext';
+import { LoadingProvider } from './contexts/LoadingContext';
+import { ProtectedRoute } from './components/ProtectedRoute';
+import { PublicRoute } from './components/PublicRoute';
+
+// Pages
+import Home from './pages/Home';
+import Login from './pages/Login';
+import Signup from './pages/Signup';
+import Dashboard from './pages/Dashboard';
+import Settings from './pages/Settings';
+import PasswordReset from './pages/PasswordReset';
+import PasswordResetConfirm from './pages/PasswordResetConfirm';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-background text-foreground p-8">
-      <div className="max-w-2xl mx-auto text-center space-y-8">
-        <h1 className="text-4xl font-bold tracking-tight">
-          Vite + React + Shadcn UI
-        </h1>
+    <GoogleOAuthProvider clientId={googleClientId}>
+      <ThemeProvider>
+        <LoadingProvider>
+          <AuthProvider>
+            <BrowserRouter>
+              <div className="min-h-screen bg-background text-foreground transition-colors">
+                <Routes>
+                  {/* Public Routes */}
+                  <Route path="/" element={<Home />} />
+                  <Route
+                    path="/login"
+                    element={
+                      <PublicRoute>
+                        <Login />
+                      </PublicRoute>
+                    }
+                  />
+                  <Route
+                    path="/signup"
+                    element={
+                      <PublicRoute>
+                        <Signup />
+                      </PublicRoute>
+                    }
+                  />
+                  <Route
+                    path="/reset-password"
+                    element={
+                      <PublicRoute>
+                        <PasswordReset />
+                      </PublicRoute>
+                    }
+                  />
+                  <Route
+                    path="/reset-password/:uid/:token"
+                    element={
+                      <PublicRoute>
+                        <PasswordResetConfirm />
+                      </PublicRoute>
+                    }
+                  />
 
-        <div className="space-y-4">
-          <p className="text-lg text-muted-foreground">
-            Click the button to test the setup
-          </p>
+                  {/* Protected Routes */}
+                  <Route
+                    path="/dashboard"
+                    element={
+                      <ProtectedRoute>
+                        <Dashboard />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/settings"
+                    element={
+                      <ProtectedRoute>
+                        <Settings />
+                      </ProtectedRoute>
+                    }
+                  />
 
-          <div className="flex gap-4 justify-center flex-wrap">
-            <Button onClick={() => setCount((count) => count + 1)}>
-              Count is {count}
-            </Button>
-            <Button variant="secondary">Secondary</Button>
-            <Button variant="outline">Outline</Button>
-            <Button variant="destructive">Destructive</Button>
-            <Button variant="ghost">Ghost</Button>
-            <Button variant="link">Link</Button>
-          </div>
-        </div>
+                  {/* Fallback */}
+                  <Route path="*" element={<Navigate to="/" replace />} />
+                </Routes>
 
-        <div className="pt-8 space-y-2">
-          <p className="text-sm text-muted-foreground">
-            Edit <code className="bg-muted px-2 py-1 rounded">src/App.jsx</code> and save to test HMR
-          </p>
-          <p className="text-sm text-muted-foreground">
-            Shadcn UI is successfully integrated! 🎉
-          </p>
-        </div>
-      </div>
-    </div>
-  )
+                {/* Toast Notifications */}
+                <Toaster
+                  position="top-right"
+                  toastOptions={{
+                    duration: 4000,
+                    style: {
+                      background: 'hsl(var(--background))',
+                      color: 'hsl(var(--foreground))',
+                      border: '1px solid hsl(var(--border))',
+                    },
+                    success: {
+                      iconTheme: {
+                        primary: 'hsl(var(--primary))',
+                        secondary: 'hsl(var(--primary-foreground))',
+                      },
+                    },
+                  }}
+                />
+              </div>
+            </BrowserRouter>
+          </AuthProvider>
+        </LoadingProvider>
+      </ThemeProvider>
+    </GoogleOAuthProvider>
+  );
 }
 
-export default App
+export default App;

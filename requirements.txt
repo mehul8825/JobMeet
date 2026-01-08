@@ -1,6 +1,10 @@
-Django
-djangorestframework
+Django>=4.2,<5.0
+djangorestframework>=3.14.0
 djongo
 pymongo[srv]
 django-cors-headers
-djangorestframework-simplejwt
+psycopg2-binary
+djangorestframework-simplejwt>=5.3.0
+google-auth>=2.23.0
+google-auth-oauthlib>=1.1.0
+google-auth-httplib2>=0.1.1
